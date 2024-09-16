@@ -111,10 +111,10 @@ def depthFirstSearch(problem):
         
         # iterate over actions
         for successor, action, stepCost in problem.getSuccessors(state):
-                if successor not in reached:
-                    # Push the successor and path to the frontier
-                    frontier.push((successor, actions + [action]))
-                    reached.add(successor)
+            if successor not in reached:
+                # Push the successor and path to the frontier
+                frontier.push((successor, actions + [action]))
+                reached.add(successor)
     
     return []
 
@@ -123,7 +123,7 @@ def breadthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
     
-    # initialize frontier stack and reached set
+    # initialize frontier queue and reached set
     frontier = util.Queue()
     reached = set()
     
@@ -133,7 +133,7 @@ def breadthFirstSearch(problem):
     
     # iterate through
     while not frontier.isEmpty():
-        # do dfs
+        # do bfs
         state, actions = frontier.pop()
         
         # if is goal state, return node
@@ -142,17 +142,44 @@ def breadthFirstSearch(problem):
         
         # iterate over actions
         for successor, action, stepCost in problem.getSuccessors(state):
-                if successor not in reached:
-                    # Push the successor and path to the frontier
-                    frontier.push((successor, actions + [action]))
-                    reached.add(successor)
+            if successor not in reached:
+                # Push the successor and path to the frontier
+                frontier.push((successor, actions + [action]))
+                reached.add(successor)
     
     return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # initialize frontier priority queue and reached set
+    frontier = util.PriorityQueueWithFunction(lambda x: problem.getCostOfActions(x[1]))
+    reached = {}
+    reached[problem.getStartState()] = 0
+    
+    # add start state to frontier
+    frontier.push((problem.getStartState(), [], 0))
+    
+    # iterate through
+    while not frontier.isEmpty():
+        # do ucs
+        state, actions, currCost = frontier.pop()
+        
+        # if is goal state, return node
+        if problem.isGoalState(state):
+            return actions
+        
+        # iterate over actions
+        for successor, action, stepCost in problem.getSuccessors(state):
+            newCost = problem.getCostOfActions(actions) + stepCost
+            
+            if successor not in reached or newCost < reached[successor]:
+                # Push the successor and path to the frontier
+                frontier.push((successor, actions + [action], newCost))
+                reached[successor] = newCost
+    
+    return []
+    
 
 def nullHeuristic(state, problem=None):
     """
