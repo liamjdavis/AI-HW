@@ -33,23 +33,23 @@ def wrap_solution(solution):
 
 
 def followAction(state, action, problem):
-  for successor1, action1, cost1 in problem.getSuccessors(state):
-    if action == action1: return successor1
-  return None
+    for successor1, action1, cost1 in problem.getSuccessors(state):
+        if action == action1: return successor1
+    return None
 
 def followPath(path, problem):
-  state = problem.getStartState()
-  states = [state]
-  for action in path:
-    state = followAction(state, action, problem)
-    states.append(state)
-  return states
+    state = problem.getStartState()
+    states = [state]
+    for action in path:
+        state = followAction(state, action, problem)
+        states.append(state)
+    return states
 
 def checkSolution(problem, path):
-  state = problem.getStartState()
-  for action in path:
-    state = followAction(state, action, problem)
-  return problem.isGoalState(state)
+    state = problem.getStartState()
+    for action in path:
+        state = followAction(state, action, problem)
+    return problem.isGoalState(state)
 
 # Search problem on a plain graph
 class GraphSearch(SearchProblem):

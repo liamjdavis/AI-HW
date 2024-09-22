@@ -186,13 +186,39 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+    print(type(state))
+    print(type(problem))
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    frontier = util.PriorityQueueWithFunction(lambda x: problem.getCostOfActions(x[1]) + heuristic(x[0], problem))
+    reached = {}
+    reached[problem.getStartState()] = 0
+    
+    # add start state to frontier
+    frontier.push((problem.getStartState(), [], 0))
+    
+    # iterate through
+    while not frontier.isEmpty():
+        # do ucs
+        state, actions, currCost = frontier.pop()
+        
+        # if is goal state, return node
+        if problem.isGoalState(state):
+            return actions
+        
+        # iterate over actions
+        for successor, action, stepCost in problem.getSuccessors(state):
+            newCost = problem.getCostOfActions(actions) + stepCost + heuristic(successor, problem)
+            
+            if successor not in reached or newCost < reached[successor]:
+                # Push the successor and path to the frontier
+                frontier.push((successor, actions + [action], newCost))
+                reached[successor] = newCost
+    
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch
