@@ -584,14 +584,57 @@ def foodHeuristic(state, problem):
     # find closest food to position
     closestFood = min([util.manhattanDistance(position, food) for food in foodList])
     
-    # find max distance between any 2 food
-    maxFoodDistance = 0
+    # generate mst for all food points
+    mstCost = mst(foodList)
     
-    for food1 in foodList:
-        for food2 in foodList:
-            maxFoodDistance = max(util.manhattanDistance(food1, food2), maxFoodDistance)
+    return closestFood + mstCost
+
+def mst(foodList):
+    if len(foodList) <= 1:
+        return 0
+
+    # create edge list
+    edges = []
     
-    return closestFood + maxFoodDistance
+    for i in range(len(foodList)):
+        for j in range(i+1, len(foodList)):
+            edges.append((util.manhattanDistance(foodList[i], foodList[j]), foodList[i], foodList[j]))
+    
+    # sort edges by distance
+    edges.sort()
+    
+    # use kruskal's algorithm to find mst
+    parent = {}
+    
+    def find(node):
+        if parent[node] == node:
+            return node
+        return find(parent[node])
+
+    def union(node1, node2):
+        root1 = find(node1)
+        root2 = find(node2)
+        
+        if root1 != root2:
+            parent[root1] = root2
+    
+    # initialize each food point as own set
+    for food in foodList:
+        parent[food] = food
+        
+    cost = 0
+    edges_used = 0
+    
+    # add edges until span all food points
+    for dist, food1, food2 in edges:
+        if find(food1) != find(food2):
+            union(food1, food2)
+            cost += dist
+            edges_used += 1
+        if edges_used == len(foodList) - 1:
+            break
+        
+    return cost
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
