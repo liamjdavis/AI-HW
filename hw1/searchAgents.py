@@ -427,11 +427,11 @@ def cornersHeuristic(state, problem):
     A heuristic for the CornersProblem that you defined.
 
 
-      state:   The current search state
-               (a data structure you chose in your search problem)
+    state:   The current search state
+            (a data structure you chose in your search problem)
 
 
-      problem: The CornersProblem instance for this layout.
+    problem: The CornersProblem instance for this layout.
 
 
     This function should always return a number that is a lower bound on the
@@ -443,8 +443,32 @@ def cornersHeuristic(state, problem):
 
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    heuristic = 0
+    
+    posX = state[0][0]
+    posY = state[0][1]
+    
+    # select unvisited corners
+    unvisited_corners = [corners[i] for i in range(4) if not state[i+1]]
+    
+    if len(unvisited_corners) == 0:
+        return 0
+    
+    # keep track of current position
+    current = (posX, posY)
+    total_distance = 0
 
+    # calculate manhattan distance to all unvisited corners
+    while unvisited_corners:
+        distances = [util.manhattanDistance(current, corner) for corner in unvisited_corners]
+        closest_distance = min(distances)
+        closest_corner_index = distances.index(closest_distance)
+        total_distance += closest_distance
+        
+        # calculate manhattan distance from new corner
+        current = unvisited_corners.pop(closest_corner_index)
+
+    return total_distance
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -460,8 +484,8 @@ class FoodSearchProblem:
 
 
     A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
-      pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
-      foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
+    pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
+    foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
     """
     def __init__(self, startingGameState):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
