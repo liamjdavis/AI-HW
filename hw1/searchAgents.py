@@ -581,15 +581,18 @@ def foodHeuristic(state, problem):
     if not foodList:
         return 0
     
+    # find manhattan distances
+    distances = [util.manhattanDistance(position, food) for food in foodList]
+    
     # find closest food to position
-    closestFood = min([util.manhattanDistance(position, food) for food in foodList])
+    closestFood = min(distances)
     
     # generate mst for all food points
-    mstCost = mst(foodList)
+    mstCost = mst(foodList, state)
     
     return closestFood + mstCost
 
-def mst(foodList):
+def mst(foodList, state):
     if len(foodList) <= 1:
         return 0
 
@@ -667,8 +670,29 @@ class ClosestDotSearchAgent(SearchAgent):
 
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        # initialize frontier
+        frontier = util.Queue()
+        visited = set()
+        
+        # add start state to frontier
+        frontier.push((startPosition, []))
+        visited.add(startPosition)
+        
+        # do bfs
+        while not frontier.isEmpty():
+            current, actions = frontier.pop()
+            
+            # check if current is food
+            if food[current[0]][current[1]]:
+                return actions
+            
+            # add successors to frontier
+            for successor, action, cost in problem.getSuccessors(current):
+                if successor not in visited:
+                    frontier.push((successor, actions + [action]))
+                    visited.add(successor)
+        
+        return []
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
