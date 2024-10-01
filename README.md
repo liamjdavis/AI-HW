@@ -1,1 +1,1 @@
-## This is Ryan Ji, Liam Davis, and Feisal Kiiru's repo for group COSC 241 (AI) HW assignments
+## This is Ryan Ji and Liam Davis's repo for group COSC 241 (AI) HW assignments
