@@ -160,7 +160,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         def minimax(state, agentIndex, depth):
-            # If game is over or max depth is reached, return evaluation
+            # If is terminal or max depth, return evaluation
             if state.isWin() or state.isLose() or depth == 0:
                 return self.evaluationFunction(state)
 
@@ -196,12 +196,67 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def alphaBeta(state, agentIndex, depth, alpha, beta):
+            # If terminal or max depth is reached, return evaluation
+            if state.isWin() or state.isLose() or depth == 0:
+                return self.evaluationFunction(state)
+
+            legalMoves = state.getLegalActions(agentIndex)
+            
+            # If no legal moves, return evaluation
+            if not legalMoves:
+                return self.evaluationFunction(state)
+
+            nextAgent = (agentIndex + 1) % state.getNumAgents()
+            nextDepth = depth - 1 if nextAgent == 0 else depth
+            
+            # Pacman (maximize)
+            if agentIndex == 0:
+                value = float('-inf')
+                
+                for action in legalMoves:
+                    value = max(value, alphaBeta(state.generateSuccessor(agentIndex, action), nextAgent, nextDepth, alpha, beta))
+                    
+                    if value > beta:
+                        return value
+                    
+                    alpha = max(alpha, value)
+                
+                return value
+            
+            # Ghosts (minimize)
+            else:  
+                value = float('inf')
+                
+                for action in legalMoves:
+                    value = min(value, alphaBeta(state.generateSuccessor(agentIndex, action), nextAgent, nextDepth, alpha, beta))
+                    
+                    if value < alpha:
+                        return value
+                    
+                    beta = min(beta, value)
+                
+                return value
+
+        # Select the action with the highest value
+        legalMoves = gameState.getLegalActions(0)
+        alpha = float('-inf')
+        beta = float('inf')
+        bestScore = float('-inf')
+        bestAction = None
+
+        for action in legalMoves:
+            score = alphaBeta(gameState.generateSuccessor(0, action), 1, self.depth, alpha, beta)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+            alpha = max(alpha, bestScore)
+
+        return bestAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Your expectimax agent (question 4)
     """
 
     def getAction(self, gameState):
