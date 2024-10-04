@@ -314,7 +314,7 @@ def betterEvaluationFunction(currentGameState):
     ghostStates = currentGameState.getGhostStates()
     scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
     
-    # Start with the game score
+    # Start with game score
     score = currentGameState.getScore()
     
     # Distance to the nearest food
@@ -325,7 +325,7 @@ def betterEvaluationFunction(currentGameState):
     else:
         minFoodDist = 1
     
-    # Ghost proximity
+    # Calculate ghost proximity
     ghostPenalty = 0
     
     for ghostState in ghostStates:
